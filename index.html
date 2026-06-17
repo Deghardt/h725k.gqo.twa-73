@@ -257,7 +257,7 @@ body {
 
 <script>
 // ── CONSTANTS ──
-var SATS = 3.5, MAX_PER_PAGE = 40;
+var SATS = 3.5, MAX_PER_PAGE = 31;
 var BOMPENGER = 13.60;
 var FIRMA = "Sarpsborg Dental AS", NAVN = "Peter Linde", ADRESSE = "Torget 4-6, 1707 Sarpsborg";
 var MONTHS = ["Jan","Feb","Mar","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Des"];
@@ -630,16 +630,47 @@ var ODS_MANIFEST='<?xml version="1.0" encoding="UTF-8"?>'
   +'<manifest:file-entry manifest:full-path="styles.xml" manifest:media-type="text/xml"/>'
   +'</manifest:manifest>';
 var ODS_STYLES='<?xml version="1.0" encoding="UTF-8"?>'
-  +'<office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" office:version="1.2">'
-  +'<office:styles/><office:automatic-styles/><office:master-styles/></office:document-styles>';
+  +'<office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.2">'
+  +'<office:styles/>'
+  +'<office:automatic-styles>'
+  +'<style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="21cm" fo:page-height="29.7cm" style:print-orientation="portrait" fo:margin-top="1cm" fo:margin-bottom="1cm" fo:margin-left="1cm" fo:margin-right="1cm" style:scale-to-pages="1" style:table-centering="horizontal"/></style:page-layout>'
+  +'</office:automatic-styles>'
+  +'<office:master-styles><style:master-page style:name="mp1" style:page-layout-name="pm1"/></office:master-styles>'
+  +'</office:document-styles>';
 
-function cS(t){ return '<table:table-cell office:value-type="string"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; }
-function cSst(t,st){ return '<table:table-cell table:style-name="'+st+'" office:value-type="string"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; }
-function cN(v,t){ return '<table:table-cell office:value-type="float" office:value="'+v+'"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; }
-function cE(){ return '<table:table-cell/>'; }
-function cH(t){ return '<table:table-cell table:style-name="ceHead" office:value-type="string"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; }
-function cHspan(t,n){ var c='<table:table-cell table:style-name="ceHead" office:value-type="string" table:number-columns-spanned="'+n+'"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; for(var i=0;i<n-1;i++) c+='<table:covered-table-cell/>'; return c; }
-function rEmpty(){ return '<table:table-row><table:table-cell/></table:table-row>'; }
+function tcS(t,st){ return '<table:table-cell'+(st?' table:style-name="'+st+'"':'')+' office:value-type="string"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; }
+function tcN(v,t,st){ return '<table:table-cell'+(st?' table:style-name="'+st+'"':'')+' office:value-type="float" office:value="'+v+'"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; }
+function tcE(st){ return '<table:table-cell'+(st?' table:style-name="'+st+'"':'')+'/>'; }
+function tcSpan(t,st,n){ var c='<table:table-cell'+(st?' table:style-name="'+st+'"':'')+' office:value-type="string" table:number-columns-spanned="'+n+'"><text:p>'+odsEsc(t)+'</text:p></table:table-cell>'; for(var i=0;i<n-1;i++) c+='<table:covered-table-cell/>'; return c; }
+function rBlank(){ return '<table:table-row><table:table-cell/></table:table-row>'; }
+
+function odsStyleDefs(){
+  return '<office:automatic-styles>'
+    +'<style:style style:name="ta1" style:family="table" style:master-page-name="mp1"/>'
+    +'<style:style style:name="coDato" style:family="table-column"><style:table-column-properties style:column-width="1.7cm"/></style:style>'
+    +'<style:style style:name="coDest" style:family="table-column"><style:table-column-properties style:column-width="5.5cm"/></style:style>'
+    +'<style:style style:name="coKm" style:family="table-column"><style:table-column-properties style:column-width="1.3cm"/></style:style>'
+    +'<style:style style:name="coSats" style:family="table-column"><style:table-column-properties style:column-width="1.3cm"/></style:style>'
+    +'<style:style style:name="coAmt" style:family="table-column"><style:table-column-properties style:column-width="1.8cm"/></style:style>'
+    +'<style:style style:name="coBom" style:family="table-column"><style:table-column-properties style:column-width="1.7cm"/></style:style>'
+    +'<style:style style:name="coPark" style:family="table-column"><style:table-column-properties style:column-width="1.7cm"/></style:style>'
+    +'<style:style style:name="coForm" style:family="table-column"><style:table-column-properties style:column-width="2.8cm"/></style:style>'
+    +'<style:style style:name="roSign" style:family="table-row"><style:table-row-properties style:row-height="1.6cm"/></style:style>'
+    +'<style:style style:name="ceTitle" style:family="table-cell"><style:text-properties fo:font-weight="bold" fo:font-size="11pt"/></style:style>'
+    +'<style:style style:name="ceInfoL" style:family="table-cell"><style:text-properties fo:font-weight="bold" fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceInfo" style:family="table-cell"><style:text-properties fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceNote" style:family="table-cell"><style:text-properties fo:font-size="7pt" fo:font-style="italic"/></style:style>'
+    +'<style:style style:name="ceHead" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #000000" fo:background-color="#EEEEEE"/><style:paragraph-properties fo:text-align="center"/><style:text-properties fo:font-weight="bold" fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceData" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #000000"/><style:text-properties fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceDest" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #000000" fo:wrap-option="wrap"/><style:text-properties fo:font-size="7pt"/></style:style>'
+    +'<style:style style:name="ceNum" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #000000"/><style:paragraph-properties fo:text-align="end"/><style:text-properties fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceSumL" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #000000" fo:background-color="#EEEEEE"/><style:text-properties fo:font-weight="bold" fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceSumN" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #000000" fo:background-color="#EEEEEE"/><style:paragraph-properties fo:text-align="end"/><style:text-properties fo:font-weight="bold" fo:font-size="8pt"/></style:style>'
+    +'<style:style style:name="ceGrandL" style:family="table-cell"><style:table-cell-properties fo:border-top="1pt solid #000000"/><style:text-properties fo:font-weight="bold" fo:font-size="11pt"/></style:style>'
+    +'<style:style style:name="ceGrandN" style:family="table-cell"><style:table-cell-properties fo:border-top="1pt solid #000000"/><style:paragraph-properties fo:text-align="end"/><style:text-properties fo:font-weight="bold" fo:font-size="11pt"/></style:style>'
+    +'<style:style style:name="ceSign" style:family="table-cell"><style:table-cell-properties fo:border-bottom="0.5pt solid #000000"/></style:style>'
+    +'</office:automatic-styles>';
+}
 
 function buildContentXml(chunk, monthLabel){
   var rows="";
@@ -647,47 +678,38 @@ function buildContentXml(chunk, monthLabel){
     var e=chunk[i], d=DEST[e.code];
     var fullDest=d ? ("Torget 6 – "+d.addr+" ("+d.name+")") : e.code;
     var dateStr=e.date.slice(8)+"."+e.date.slice(5,7)+"."+e.date.slice(0,4);
-    var ev=extrasOf(e);
-    rows+='<table:table-row>'+cS(dateStr)+cSst(fullDest,"ceDest")+cN(e.km,String(e.km))+cN(SATS,String(SATS))+cN(e.amount,fmtKr(e.amount))+(ev>0?cN(ev,fmtKr(ev)):cE())+cE()+cS("varehenting/-levering")+'</table:table-row>';
+    var bv=bomOf(e), pv=parkOf(e);
+    rows+='<table:table-row>'
+      +tcS(dateStr,"ceData")
+      +tcS(fullDest,"ceDest")
+      +tcN(e.km,String(e.km),"ceNum")
+      +tcN(SATS,String(SATS),"ceNum")
+      +tcN(e.amount,fmtKr(e.amount),"ceNum")
+      +(bv>0?tcN(bv,fmtKr(bv),"ceNum"):tcE("ceNum"))
+      +(pv>0?tcN(pv,fmtKr(pv),"ceNum"):tcE("ceNum"))
+      +tcS("varehenting/-levering","ceData")
+      +'</table:table-row>';
   }
-  var totalKm=0,totalAmt=0,totalExtra=0;
-  for(var i=0;i<chunk.length;i++){ totalKm+=chunk[i].km; totalAmt+=chunk[i].amount; totalExtra+=extrasOf(chunk[i]); }
-  var grand=totalAmt+totalExtra;
+  var totalKm=0,totalAmt=0,totalBom=0,totalPark=0;
+  for(var i=0;i<chunk.length;i++){ totalKm+=chunk[i].km; totalAmt+=chunk[i].amount; totalBom+=bomOf(chunk[i]); totalPark+=parkOf(chunk[i]); }
+  var grand=totalAmt+totalBom+totalPark;
 
   return '<?xml version="1.0" encoding="UTF-8"?>'
     +'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.2">'
-    +'<office:automatic-styles>'
-    +'<style:style style:name="coDato" style:family="table-column"><style:table-column-properties style:column-width="2.4cm"/></style:style>'
-    +'<style:style style:name="coDest" style:family="table-column"><style:table-column-properties style:column-width="8cm"/></style:style>'
-    +'<style:style style:name="coKm" style:family="table-column"><style:table-column-properties style:column-width="1.8cm"/></style:style>'
-    +'<style:style style:name="coSats" style:family="table-column"><style:table-column-properties style:column-width="1.8cm"/></style:style>'
-    +'<style:style style:name="coAmt" style:family="table-column"><style:table-column-properties style:column-width="2.2cm"/></style:style>'
-    +'<style:style style:name="coBom" style:family="table-column"><style:table-column-properties style:column-width="2.8cm"/></style:style>'
-    +'<style:style style:name="coUtl" style:family="table-column"><style:table-column-properties style:column-width="2.4cm"/></style:style>'
-    +'<style:style style:name="coForm" style:family="table-column"><style:table-column-properties style:column-width="4cm"/></style:style>'
-    +'<style:style style:name="roSign" style:family="table-row"><style:table-row-properties style:row-height="1.8cm"/></style:style>'
-    +'<style:style style:name="ceHead" style:family="table-cell"><style:text-properties fo:font-weight="bold"/></style:style>'
-    +'<style:style style:name="ceDest" style:family="table-cell"><style:table-cell-properties fo:wrap-option="wrap"/><style:text-properties fo:font-size="9pt"/></style:style>'
-    +'<style:style style:name="ceSign" style:family="table-cell"><style:table-cell-properties fo:border-bottom="0.5pt solid #000000"/></style:style>'
-    +'</office:automatic-styles>'
-    +'<office:body><office:spreadsheet><table:table table:name="Kjørebok">'
-    +'<table:table-column table:style-name="coDato"/><table:table-column table:style-name="coDest"/><table:table-column table:style-name="coKm"/><table:table-column table:style-name="coSats"/><table:table-column table:style-name="coAmt"/><table:table-column table:style-name="coBom"/><table:table-column table:style-name="coUtl"/><table:table-column table:style-name="coForm"/>'
-    +'<table:table-row>'+cHspan("KJØREBOK - REISEREGNING - BILGODTGJØRELSE",8)+'</table:table-row>'
-    +rEmpty()
-    +'<table:table-row>'+cH("FIRMA")+cS(FIRMA)+cE()+cH("Måned / år")+cS(monthLabel)+'</table:table-row>'
-    +'<table:table-row>'+cH("Ansattes navn")+cS(NAVN)+'</table:table-row>'
-    +'<table:table-row>'+cH("Ansattes adresse")+cS(ADRESSE)+'</table:table-row>'
-    +rEmpty()
-    +'<table:table-row>'+cHspan("Eventuelle utgifter til parkering, bompenger etc. dokumenteres med eget bilag.",8)+'</table:table-row>'
-    +rEmpty()
-    +'<table:table-row>'+cH("Dato")+cH("Kjøring til-fra")+cH("Antall km")+cH("KM-sats")+cH("Beløp")+cH("Parkering/ Bompenger")+cH("Andre Utlegg")+cH("Formålet med turen")+'</table:table-row>'
+    +odsStyleDefs()
+    +'<office:body><office:spreadsheet><table:table table:name="Kjørebok" table:style-name="ta1">'
+    +'<table:table-column table:style-name="coDato"/><table:table-column table:style-name="coDest"/><table:table-column table:style-name="coKm"/><table:table-column table:style-name="coSats"/><table:table-column table:style-name="coAmt"/><table:table-column table:style-name="coBom"/><table:table-column table:style-name="coPark"/><table:table-column table:style-name="coForm"/>'
+    +'<table:table-row>'+tcSpan("KJØREBOK – REISEREGNING – BILGODTGJØRELSE","ceTitle",8)+'</table:table-row>'
+    +'<table:table-row>'+tcS("FIRMA","ceInfoL")+tcS(FIRMA,"ceInfo")+tcE()+tcS("Måned / år","ceInfoL")+tcS(monthLabel,"ceInfo")+'</table:table-row>'
+    +'<table:table-row>'+tcS("Navn","ceInfoL")+tcS(NAVN,"ceInfo")+tcE()+tcS("Adresse","ceInfoL")+tcS(ADRESSE,"ceInfo")+'</table:table-row>'
+    +'<table:table-row>'+tcSpan("Eventuelle utgifter til parkering, bompenger etc. dokumenteres med eget bilag.","ceNote",8)+'</table:table-row>'
+    +'<table:table-row>'+tcS("Dato","ceHead")+tcS("Kjøring til-fra","ceHead")+tcS("Antall km","ceHead")+tcS("KM-sats","ceHead")+tcS("Beløp","ceHead")+tcS("Bompenger","ceHead")+tcS("Parkering","ceHead")+tcS("Formålet med turen","ceHead")+'</table:table-row>'
     +rows
-    +'<table:table-row>'+cH("SUM")+cE()+cN(totalKm,String(totalKm))+cE()+cN(totalAmt,fmtKr(totalAmt))+cN(totalExtra,fmtKr(totalExtra))+cE()+cE()+'</table:table-row>'
-    +rEmpty()
-    +'<table:table-row>'+cH("SUM REISEREGNING")+cN(grand,fmtKr(grand))+'</table:table-row>'
-    +rEmpty()+rEmpty()
+    +'<table:table-row>'+tcS("SUM","ceSumL")+tcE("ceSumL")+tcN(totalKm,String(totalKm),"ceSumN")+tcE("ceSumL")+tcN(totalAmt,fmtKr(totalAmt),"ceSumN")+tcN(totalBom,fmtKr(totalBom),"ceSumN")+tcN(totalPark,fmtKr(totalPark),"ceSumN")+tcE("ceSumL")+'</table:table-row>'
+    +'<table:table-row>'+tcSpan("SUM REISEREGNING","ceGrandL",4)+tcN(grand,fmtKr(grand),"ceGrandN")+tcE("ceGrandN")+tcE("ceGrandN")+tcE("ceGrandN")+'</table:table-row>'
+    +rBlank()
     +'<table:table-row table:style-name="roSign"><table:table-cell table:style-name="ceSign"/><table:table-cell table:style-name="ceSign"/><table:table-cell table:style-name="ceSign"/></table:table-row>'
-    +'<table:table-row>'+cH("Dato")+cH("Underskrift")+cH("Attestasjon")+'</table:table-row>'
+    +'<table:table-row>'+tcS("Dato","ceInfoL")+tcS("Underskrift","ceInfoL")+tcS("Attestasjon","ceInfoL")+'</table:table-row>'
     +'</table:table></office:spreadsheet></office:body></office:document-content>';
 }
 
